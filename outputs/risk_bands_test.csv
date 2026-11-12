@@ -1,0 +1,4 @@
+risk_band,customers,attrited,attrition_rate_pct
+Low,1500,38,2.5
+Medium,1045,133,12.7
+High,494,317,64.2

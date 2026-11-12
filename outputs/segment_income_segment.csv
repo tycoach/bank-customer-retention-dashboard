@@ -1,0 +1,5 @@
+income_segment,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+Low income,3561,612,3754.4,4363.4,17.2
+Lower-middle,3192,460,7788.6,4425.4,14.4
+Unknown,1112,187,9516.6,4282.2,16.8
+Upper-middle/High,2262,368,17065.7,4497.9,16.3

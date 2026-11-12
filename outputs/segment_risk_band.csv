@@ -1,0 +1,4 @@
+risk_band,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+Low,5013,101,8577.5,5763.0,2.0
+Medium,3394,425,9110.6,3560.2,12.5
+High,1720,1101,7846.1,2108.7,64.0

@@ -1,0 +1,5 @@
+card_category,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+Blue,9436,1519,7363.8,4225.4,16.1
+Silver,555,82,25277.8,6590.5,14.8
+Gold,116,21,28416.4,7685.6,18.1
+Platinum,20,5,30283.4,8999.8,25.0

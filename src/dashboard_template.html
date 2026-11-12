@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Customer Retention Intelligence Dashboard</title>
+<style>
+  :root {
+    --surface: #fcfcfb; --page: #f4f3ef; --ink: #0b0b0b; --ink2: #52514e; --muted: #898781;
+    --grid: #e1e0d9; --exist: #2a78d6; --attr: #eb6834; --accent: #184f95;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); color: var(--ink);
+         font: 14px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+  .wrap { max-width: 1320px; margin: 0 auto; padding: 20px 24px 40px; }
+  header h1 { font-size: 22px; margin: 0 0 2px; letter-spacing: -.01em; }
+  header p { margin: 0; color: var(--ink2); }
+  .filters { display: flex; flex-wrap: wrap; gap: 14px; align-items: flex-end; margin: 16px 0 12px;
+             padding: 12px 14px; background: var(--surface); border: 1px solid var(--grid); border-radius: 10px; }
+  .filters label { display: flex; flex-direction: column; font-size: 11px; color: var(--ink2);
+                   text-transform: uppercase; letter-spacing: .05em; gap: 4px; }
+  .filters select { font: inherit; font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--ink);
+                    padding: 6px 8px; border: 1px solid var(--grid); border-radius: 6px; background: #fff; min-width: 150px; }
+  .filters .spacer { flex: 1; }
+  .filters .count { color: var(--ink2); font-size: 13px; padding-bottom: 6px; }
+  .filters .count b { color: var(--ink); }
+  button { font: inherit; cursor: pointer; }
+  .reset { padding: 6px 12px; border: 1px solid var(--grid); background: #fff; border-radius: 6px; color: var(--ink2); }
+  .reset:hover { border-color: var(--muted); }
+  .tabs { display: flex; gap: 4px; margin: 6px 0 14px; border-bottom: 1px solid var(--grid); }
+  .tab { padding: 9px 16px; border: 0; background: none; color: var(--ink2); border-bottom: 3px solid transparent; font-weight: 600; }
+  .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); }
+  .kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 14px; }
+  .kpi { background: var(--surface); border: 1px solid var(--grid); border-radius: 10px; padding: 12px 14px; }
+  .kpi .l { font-size: 11px; color: var(--ink2); text-transform: uppercase; letter-spacing: .05em; }
+  .kpi .v { font-size: 28px; font-weight: 650; letter-spacing: -.02em; margin: 2px 0; }
+  .kpi .s { font-size: 12px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .card { background: var(--surface); border: 1px solid var(--grid); border-radius: 10px; padding: 14px 16px 12px; min-width: 0; }
+  .card.wide { grid-column: 1 / -1; }
+  .card h3 { margin: 0; font-size: 15px; }
+  .card .sub { color: var(--ink2); font-size: 12px; margin: 1px 0 4px; }
+  .card .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  .toggle { font-size: 11px; padding: 3px 9px; border: 1px solid var(--grid); background: #fff; color: var(--ink2); border-radius: 12px; }
+  .toggle:hover { border-color: var(--muted); }
+  .chart { width: 100%; height: 320px; }
+  .tview { max-height: 320px; overflow: auto; }
+  .tview.full { max-height: none; overflow: visible; }
+  .note { margin-top: 6px; font-size: 12px; color: var(--ink2); border-top: 1px solid var(--grid); padding-top: 8px; }
+  .note b { color: var(--ink); }
+  .note .why { color: var(--muted); margin-bottom: 3px; }
+  table.t { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+  table.t th { text-align: right; font-weight: 600; color: var(--ink2); padding: 6px 8px; border-bottom: 1px solid var(--grid); position: sticky; top: 0; background: var(--surface); }
+  table.t td { text-align: right; padding: 6px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  table.t th:first-child, table.t td:first-child { text-align: left; }
+  .empty { color: var(--muted); padding: 60px 0; text-align: center; }
+  footer { margin-top: 16px; color: var(--muted); font-size: 11.5px; }
+  @media (max-width: 900px) { .kpis { grid-template-columns: repeat(2, 1fr); } .grid { grid-template-columns: 1fr; } }
+</style>
+<script>__PLOTLYJS__</script>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Customer Retention Intelligence Dashboard</h1>
+    <p>MIT 8339 Business Intelligence and Decision Support Systems &middot; BankChurners dataset, 10,127 credit-card customers &middot; Prepared for the Chief Data Officer</p>
+  </header>
+
+  <div class="filters" id="filters" role="group" aria-label="Customer filters"></div>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="tab1" aria-selected="true" data-page="page1">1 &middot; Executive overview</button>
+    <button class="tab" role="tab" id="tab2" aria-selected="false" data-page="page2">2 &middot; Customer retention analysis</button>
+  </div>
+
+  <section id="page1">
+    <div class="kpis" id="kpis"></div>
+    <div class="grid" id="grid1"></div>
+  </section>
+  <section id="page2" hidden>
+    <div class="grid" id="grid2"></div>
+  </section>
+
+  <footer>Source: Goyal, S. (n.d.). Credit Card Customers [Data set]. Kaggle. Filters apply to every KPI, chart and table on both pages.
+    Insight sentences under each chart describe the full portfolio. Risk bands come from a transparent points score (see report).</footer>
+</div>
+
+<script>
+const D = __DATA__;
+const META = __META__;
+const N = META.n_total;
+const C = { surface:'#fcfcfb', ink:'#0b0b0b', ink2:'#52514e', muted:'#898781', grid:'#e1e0d9', exist:'#2a78d6', attr:'#eb6834' };
+const FONT = '-apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+const fmt = n => Math.round(n).toLocaleString('en-US');
+const pct = (x, d=1) => x.toFixed(d) + '%';
+const ALL = Array.from({length:N}, (_, i) => i);
+const PORT_RATE = ALL.reduce((s,i)=>s+D.churned[i],0) / N * 100;
+
+/* ---------- filters ---------- */
+const FILTERS = [
+  {key:'card_category', label:'Card category'},
+  {key:'income_segment', label:'Income segment'},
+  {key:'age_band', label:'Age band'},
+  {key:'gender', label:'Gender', names:{F:'Female', M:'Male'}},
+  {key:'risk_band', label:'Risk band'},
+];
+const state = {};
+function buildFilters() {
+  const box = document.getElementById('filters');
+  FILTERS.forEach(f => {
+    const lab = document.createElement('label'); lab.textContent = f.label;
+    const sel = document.createElement('select'); sel.id = 'f_' + f.key; sel.setAttribute('aria-label', f.label);
+    const all = new Option('All', ''); sel.add(all);
+    META.orders[f.key].forEach(v => sel.add(new Option((f.names && f.names[v]) || v, v)));
+    sel.addEventListener('change', () => { state[f.key] = sel.value; render(); });
+    lab.appendChild(sel); box.appendChild(lab);
+  });
+  const sp = document.createElement('div'); sp.className = 'spacer'; box.appendChild(sp);
+  const cnt = document.createElement('div'); cnt.className = 'count'; cnt.id = 'count'; box.appendChild(cnt);
+  const rs = document.createElement('button'); rs.className = 'reset'; rs.textContent = 'Reset filters';
+  rs.addEventListener('click', () => { FILTERS.forEach(f => { state[f.key] = ''; document.getElementById('f_'+f.key).value = ''; }); render(); });
+  box.appendChild(rs);
+}
+function filteredIdx() {
+  const act = FILTERS.filter(f => state[f.key]);
+  if (!act.length) return ALL;
+  return ALL.filter(i => act.every(f => D[f.key][i] === state[f.key]));
+}
+const filtersActive = () => FILTERS.some(f => state[f.key]);
+
+/* ---------- aggregation helpers ---------- */
+function rateBy(ix, col, order) {
+  const m = {}; order.forEach(o => m[o] = {n:0, a:0});
+  ix.forEach(i => { const k = D[col][i]; if (m[k]) { m[k].n++; m[k].a += D.churned[i]; } });
+  return order.map(o => ({label:o, n:m[o].n, a:m[o].a, r: m[o].n ? m[o].a / m[o].n * 100 : null}));
+}
+function kpiCalc(ix) {
+  const n = ix.length; let a=0, lim=0, ut=0, amt=0, prod=0, hi=0, hiAmt=0;
+  ix.forEach(i => { a += D.churned[i]; lim += D.credit_limit[i]; ut += D.utilisation_ratio[i]; amt += D.total_trans_amt[i];
+    prod += D.total_relationship_count[i]; if (D.risk_band[i] === 'High') { hi++; hiAmt += D.total_trans_amt[i]; } });
+  return {n, attr: n? a/n*100 : NaN, active: n? 100 - a/n*100 : NaN, lim: n? lim/n : NaN, util: n? ut/n*100 : NaN,
+          amt, prod: n? prod/n : NaN, hi, hiShare: n? hi/n*100 : NaN, hiValue: amt? hiAmt/amt*100 : NaN};
+}
+const PORT = kpiCalc(ALL);
+
+/* ---------- plotly helpers ---------- */
+function baseLayout(extra) {
+  return Object.assign({
+    paper_bgcolor: C.surface, plot_bgcolor: C.surface, font: {family: FONT, color: C.ink2, size: 12},
+    margin: {l: 10, r: 20, t: 14, b: 40}, showlegend: false, hoverlabel: {font: {family: FONT, size: 12}},
+  }, extra || {});
+}
+const AX = (o) => Object.assign({gridcolor: C.grid, zeroline: false, linecolor: C.grid, tickfont: {color: C.muted}, automargin: true}, o || {});
+
+function hbar(rows, o) {
+  o = o || {};
+  const vals = rows.map(r => r.r == null ? 0 : r.r);
+  const mx = Math.max(PORT_RATE, ...vals), xmax = mx * 2.05;
+  // Rates cannot exceed 100%, so only draw ticks up to 100% even though the axis leaves room for labels.
+  const step = [5, 10, 20, 25, 50].find(st => mx / st <= 6) || 50, tv = [];
+  for (let v = 0; v <= Math.min(100, Math.ceil(mx / step) * step); v += step) tv.push(v);
+  const trace = {
+    type:'bar', orientation:'h', x: vals, y: rows.map(r => r.label),
+    marker:{color: C.attr, cornerradius: 4}, customdata: rows.map(r => [r.n, r.a]),
+    hovertemplate:'<b>%{y}</b><br>Attrition rate: %{x:.1f}%<br>%{customdata[0]:,} customers, %{customdata[1]:,} attrited<extra></extra>',
+  };
+  // Value labels sit in a fixed right-hand column so they never collide with bars or the reference line.
+  const labels = rows.map(r => ({xref:'x', yref:'y', x:xmax, y:r.label, xanchor:'right', yanchor:'middle', showarrow:false,
+    align:'right', font:{size:12, color:C.ink2},
+    text: r.n ? `<b>${r.r.toFixed(1)}%</b>  n=${fmt(r.n)}${r.n < 30 ? ' (low n)' : ''}` : 'no customers'}));
+  const layout = baseLayout({
+    bargap: 0.5, margin: {l: 10, r: 20, t: 22, b: 36},
+    xaxis: AX({range:[0, xmax], tickmode:'array', tickvals: tv, ticktext: tv.map(v => v + '%'), title:{text:'Attrition rate', font:{size:11}}}),
+    yaxis: AX({autorange:'reversed', showgrid:false, tickfont:{color:C.ink, size:12}}),
+    shapes: [{type:'line', x0:PORT_RATE, x1:PORT_RATE, y0:0, y1:1, yref:'paper', layer:'below', line:{color:C.muted, width:1.5, dash:'dot'}}],
+    annotations: labels.concat([{x:PORT_RATE, y:1, yref:'paper', yanchor:'bottom', text:`Portfolio ${pct(PORT_RATE)}`, showarrow:false, font:{size:11, color:C.muted}}]),
+  });
+  return {traces:[trace], layout, table:{cols:['Group','Customers','Attrited','Attrition rate'],
+    rows: rows.map(r => [r.label, fmt(r.n), fmt(r.a), r.n ? pct(r.r) : '–'])}};
+}
+
+/* ---------- chart builders ---------- */
+const BUILD = {
+  A: ix => hbar(rateBy(ix, 'transaction_frequency_band', META.orders.transaction_frequency_band)),
+  B: ix => hbar(rateBy(ix, 'risk_band', META.orders.risk_band).map(r => Object.assign(r, {label: r.label + ' risk'}))),
+  C: ix => hbar(rateBy(ix, 'card_category', META.orders.card_category)),
+  D: ix => {
+    const rows = rateBy(ix, 'age_band', META.orders.age_band).map(r => Object.assign(r, {label:'Age: ' + r.label}))
+      .concat(rateBy(ix, 'income_segment', META.orders.income_segment).map(r => Object.assign(r, {label:'Income: ' + r.label})));
+    return hbar(rows);
+  },
+  E: ix => {
+    const xs = META.orders.spend_trend, ys = META.orders.transaction_frequency_band;
+    const n = ys.map(() => xs.map(() => 0)), a = ys.map(() => xs.map(() => 0));
+    ix.forEach(i => { const r = ys.indexOf(D.transaction_frequency_band[i]), c = xs.indexOf(D.spend_trend[i]);
+      if (r >= 0 && c >= 0) { n[r][c]++; a[r][c] += D.churned[i]; } });
+    const z = n.map((row, r) => row.map((v, c) => v ? a[r][c] / v * 100 : null));
+    const flat = z.flat().filter(v => v !== null), zmax = Math.max(40, ...flat);
+    const ann = [];
+    z.forEach((row, r) => row.forEach((v, c) => ann.push({x: xs[c], y: ys[r], showarrow:false,
+      text: v === null ? '–' : `<b>${v.toFixed(1)}%</b><br>n=${fmt(n[r][c])}`,
+      font: {size: 12, color: v !== null && v > zmax * 0.45 ? '#ffffff' : C.ink}})));
+    const trace = {type:'heatmap', x: xs, y: ys, z, zmin:0, zmax, xgap:2, ygap:2, hoverongaps:false,
+      colorscale:[[0,'#cde2fb'],[0.25,'#86b6ef'],[0.5,'#3987e5'],[0.75,'#1c5cab'],[1,'#0d366b']],
+      colorbar:{title:{text:'Attrition %', font:{size:11}}, thickness:10, len:0.8, tickfont:{color:C.muted}},
+      customdata: n, hovertemplate:'Transactions: %{y}<br>Spend trend: %{x}<br>Attrition: %{z:.1f}%<br>%{customdata:,} customers<extra></extra>'};
+    const layout = baseLayout({margin:{l:10, r:10, t:10, b:50}, annotations: ann,
+      xaxis: AX({side:'bottom', showgrid:false, tickfont:{color:C.ink}, title:{text:'Change in transaction count, Q4 vs Q1', font:{size:11}}}),
+      yaxis: AX({autorange:'reversed', showgrid:false, tickfont:{color:C.ink}, title:{text:'Transactions in last 12 months', font:{size:11}}})});
+    const rows = []; ys.forEach((y, r) => xs.forEach((x, c) => rows.push([y, x, fmt(n[r][c]), fmt(a[r][c]), z[r][c] === null ? '–' : pct(z[r][c])])));
+    return {traces:[trace], layout, table:{cols:['Transactions','Spend trend','Customers','Attrited','Attrition rate'], rows}};
+  },
+  F: ix => {
+    const ex = ix.filter(i => D.churned[i] === 0), at = ix.filter(i => D.churned[i] === 1);
+    const mk = (idx, name, color, op) => ({type:'scatter', mode:'markers', name, x: idx.map(i => D.total_trans_ct[i]), y: idx.map(i => D.total_trans_amt[i]),
+      marker:{color, size:5, opacity:op, line:{width:0}}, hovertemplate: name + '<br>Transactions: %{x}<br>Amount: $%{y:,}<extra></extra>'});
+    const layout = baseLayout({showlegend:true, legend:{orientation:'h', x:0, y:1.12, font:{color:C.ink}}, margin:{l:10, r:20, t:30, b:44},
+      xaxis: AX({title:{text:'Transactions in last 12 months', font:{size:11}}}),
+      yaxis: AX({tickprefix:'$', title:{text:'Total transaction amount, 12m', font:{size:11}}})});
+    const grp = (idx) => idx.length ? [fmt(idx.length), fmt(idx.reduce((s,i)=>s+D.total_trans_ct[i],0)/idx.length), '$' + fmt(idx.reduce((s,i)=>s+D.total_trans_amt[i],0)/idx.length)] : ['0','–','–'];
+    return {traces:[mk(ex, 'Existing', C.exist, 0.45), mk(at, 'Attrited', C.attr, 0.6)], layout,
+      table:{cols:['Group','Customers','Avg transactions','Avg amount'], rows:[['Existing', ...grp(ex)], ['Attrited', ...grp(at)]]}};
+  },
+  G: ix => {
+    const vars = [['total_trans_ct','Transactions (12m)'], ['total_trans_amt','Transaction amount'], ['total_revolving_bal','Revolving balance'],
+      ['utilisation_ratio','Utilisation ratio'], ['total_ct_chng_q4_q1','Txn-count change Q4/Q1'], ['total_relationship_count','Products held'],
+      ['months_inactive_12_mon','Months inactive'], ['contacts_count_12_mon','Contacts with bank']];
+    const ex = ix.filter(i => D.churned[i] === 0), at = ix.filter(i => D.churned[i] === 1);
+    if (!ex.length || !at.length) return null;
+    const mean = (idx, c) => idx.reduce((s, i) => s + D[c][i], 0) / idx.length;
+    const rows = vars.map(([c, l]) => { const e = mean(ex, c), a = mean(at, c); return {label:l, e, a, idx: e ? a / e * 100 : null}; });
+    const trace = {type:'bar', orientation:'h', y: rows.map(r => r.label), x: rows.map(r => r.idx - 100), base: 100,
+      text: rows.map(r => r.idx === null ? '' : Math.round(r.idx)), textposition:'outside', cliponaxis:false, textfont:{color:C.ink2},
+      marker:{color:C.attr, cornerradius:4}, customdata: rows.map(r => [r.e, r.a]),
+      hovertemplate:'<b>%{y}</b><br>Attrited average: %{customdata[1]:,.2f}<br>Existing average: %{customdata[0]:,.2f}<br>Index: %{text} (existing = 100)<extra></extra>'};
+    const layout = baseLayout({bargap:0.5, margin:{l:10, r:30, t:22, b:44},
+      xaxis: AX({range:[30, 150], title:{text:'Attrited customers as % of the existing-customer average (existing = 100)', font:{size:11}}}),
+      yaxis: AX({autorange:'reversed', showgrid:false, tickfont:{color:C.ink}}),
+      shapes:[{type:'line', x0:100, x1:100, y0:0, y1:1, yref:'paper', line:{color:C.exist, width:2}}],
+      annotations:[{x:100, y:1, yref:'paper', yanchor:'bottom', text:'Existing average = 100', showarrow:false, font:{size:11, color:C.exist}}]});
+    return {traces:[trace], layout, table:{cols:['Variable','Existing avg','Attrited avg','Index (existing = 100)'],
+      rows: rows.map(r => [r.label, r.e.toFixed(2), r.a.toFixed(2), r.idx === null ? '–' : r.idx.toFixed(0)])}};
+  },
+  H: ix => {
+    const rows = rateBy(ix, 'products_held_band', META.orders.products_held_band).map(r => Object.assign(r, {label:'Products: ' + r.label}))
+      .concat(rateBy(ix, 'utilisation_band', META.orders.utilisation_band).map(r => Object.assign(r, {label:'Utilisation: ' + r.label})));
+    return hbar(rows);
+  },
+};
+
+/* ---------- card config ---------- */
+const INS = META.insights;
+const CARDS = [
+  {id:'A', page:1, title:'Attrition rate by transaction frequency', sub:'Customers grouped by number of transactions in the last 12 months',
+   why:'Why this chart: a short ranked bar chart compares three ordered groups against a portfolio reference line without distorting scale.'},
+  {id:'B', page:1, title:'Attrition rate by retention-risk band', sub:'Validates the risk score: attrition should rise from Low to High',
+   why:'Why this chart: bars on a common zero baseline show whether the score truly separates customers; sample sizes are printed beside each bar.'},
+  {id:'C', page:1, title:'Attrition rate by card category', sub:'Product tier from Blue to Platinum',
+   why:'Why this chart: sample sizes are shown so a tiny tier (Platinum) is not over-read as a trend.'},
+  {id:'D', page:1, title:'Attrition rate by age band and income segment', sub:'Do customer demographics explain attrition?',
+   why:'Why this chart: one shared axis and the portfolio line make small differences look as small as they are.'},
+  {id:'E', page:2, wide:false, title:'Where attrition concentrates: activity x spending trend', sub:'Attrition rate (colour) and customers (n) for each combination',
+   why:'Why this chart: a heatmap suits a two-way grid of ordered categories; the numbers in each cell remove any need to judge shade.'},
+  {id:'F', page:2, title:'Transaction count against transaction amount', sub:'Each dot is one customer',
+   why:'Why this chart: a scatter shows the shape of the two groups, which averages would hide. Two colours only, kept consistent across the dashboard.'},
+  {id:'G', page:2, title:'How attrited customers differ from existing customers', sub:'Average of each measure, indexed so existing customers = 100',
+   why:'Why this chart: indexing puts measures with different units on one axis, so no dual-axis chart is needed.'},
+  {id:'H', page:2, title:'Attrition by relationship depth and card usage', sub:'Products held and credit-utilisation band',
+   why:'Why this chart: the same bar form as the overview lets a reader compare engagement drivers directly.'},
+];
+
+function el(tag, cls, html) { const e = document.createElement(tag); if (cls) e.className = cls; if (html !== undefined) e.innerHTML = html; return e; }
+const views = {}; // id -> 'chart' | 'table'
+function buildCards() {
+  CARDS.forEach(c => {
+    const card = el('div', 'card' + (c.wide ? ' wide' : ''));
+    const head = el('div', 'head');
+    const t = el('div'); t.appendChild(el('h3', '', c.title)); t.appendChild(el('div', 'sub', c.sub));
+    const btn = el('button', 'toggle', 'View as table'); btn.setAttribute('aria-pressed', 'false');
+    btn.addEventListener('click', () => { views[c.id] = views[c.id] === 'table' ? 'chart' : 'table'; btn.textContent = views[c.id] === 'table' ? 'View as chart' : 'View as table'; btn.setAttribute('aria-pressed', views[c.id] === 'table'); render(); });
+    head.appendChild(t); head.appendChild(btn); card.appendChild(head);
+    const ch = el('div', 'chart'); ch.id = 'chart_' + c.id; card.appendChild(ch);
+    const tv = el('div', 'tview'); tv.id = 'table_' + c.id; tv.hidden = true; card.appendChild(tv);
+    const note = el('div', 'note'); note.appendChild(el('div', 'why', c.why));
+    note.appendChild(el('div', '', '<b>Insight (full portfolio):</b> ' + INS[c.id])); card.appendChild(note);
+    document.getElementById(c.page === 1 ? 'grid1' : 'grid2').appendChild(card); views[c.id] = 'chart';
+  });
+  // page 2 table cards (risk summary + outreach list)
+  const mk = (id, title, sub, ins) => { const card = el('div', 'card wide'); card.appendChild(el('h3', '', title)); card.appendChild(el('div', 'sub', sub));
+    const tv = el('div', 'tview full'); tv.id = id; card.appendChild(tv);
+    const note = el('div', 'note'); note.appendChild(el('div', '', '<b>Insight (full portfolio):</b> ' + ins)); card.appendChild(note);
+    document.getElementById('grid2').appendChild(card); };
+  mk('tbl_risk', 'Customer segmentation: retention-risk bands', 'Size, attrition and value of each band (responds to filters)', INS.I);
+  mk('tbl_list', 'Priority outreach list: highest-value high-risk customers', 'Top 10 customers in the High band by 12-month transaction amount (responds to filters)',
+     'These are the accounts where a personal call protects the most value. Customer IDs are shown for operational use only; this list should be access-controlled.');
+}
+
+function tableHTML(cols, rows) {
+  return '<table class="t"><thead><tr>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead><tbody>' +
+    rows.map(r => '<tr>' + r.map(v => `<td>${v}</td>`).join('') + '</tr>').join('') + '</tbody></table>';
+}
+
+/* ---------- render ---------- */
+function renderKpis(ix) {
+  const k = kpiCalc(ix), act = filtersActive();
+  const tiles = [
+    ['Attrition rate', isNaN(k.attr) ? '–' : pct(k.attr), 'Share of customers who left', pct(PORT.attr)],
+    ['Active customer ratio', isNaN(k.active) ? '–' : pct(k.active), 'Share still with the bank', pct(PORT.active)],
+    ['Average credit limit', isNaN(k.lim) ? '–' : '$' + fmt(k.lim), 'Mean limit per customer', '$' + fmt(PORT.lim)],
+    ['Average utilisation', isNaN(k.util) ? '–' : pct(k.util), 'Revolving balance / credit limit', pct(PORT.util)],
+    ['Total transaction amount', '$' + (k.amt / 1e6).toFixed(1) + 'M', 'Sum over the last 12 months', '$' + (PORT.amt / 1e6).toFixed(1) + 'M'],
+    ['Average products held', isNaN(k.prod) ? '–' : k.prod.toFixed(2), 'Bank products per customer', PORT.prod.toFixed(2)],
+    ['High-risk customers', fmt(k.hi), isNaN(k.hiShare) ? '' : `${pct(k.hiShare)} of customers · ${isNaN(k.hiValue) ? '–' : pct(k.hiValue)} of txn value`, fmt(PORT.hi)],
+    ['Transaction value at risk', isNaN(k.hiValue) ? '–' : pct(k.hiValue), 'Txn amount held by High-risk customers', pct(PORT.hiValue)],
+  ];
+  document.getElementById('kpis').innerHTML = tiles.map(t =>
+    `<div class="kpi"><div class="l">${t[0]}</div><div class="v">${t[1]}</div><div class="s">${act ? 'Portfolio: ' + t[3] : t[2]}</div></div>`).join('');
+}
+function renderTables(ix) {
+  const bands = META.orders.risk_band; const tot = ix.reduce((s, i) => s + D.total_trans_amt[i], 0);
+  const rows = bands.map(b => { const idx = ix.filter(i => D.risk_band[i] === b), n = idx.length, a = idx.reduce((s, i) => s + D.churned[i], 0);
+    const lim = n ? idx.reduce((s, i) => s + D.credit_limit[i], 0) / n : 0, amt = idx.reduce((s, i) => s + D.total_trans_amt[i], 0);
+    return [b, fmt(n), fmt(a), n ? pct(a / n * 100) : '–', n ? '$' + fmt(lim) : '–', n ? '$' + fmt(amt / n) : '–', tot ? pct(amt / tot * 100) : '–']; });
+  document.getElementById('tbl_risk').innerHTML = tableHTML(['Risk band', 'Customers', 'Attrited', 'Attrition rate', 'Avg credit limit', 'Avg txn amount', 'Share of txn value'], rows);
+  const top = ix.filter(i => D.risk_band[i] === 'High').sort((p, q) => D.total_trans_amt[q] - D.total_trans_amt[p]).slice(0, 10);
+  document.getElementById('tbl_list').innerHTML = top.length ? tableHTML(['Customer ID', 'Card', 'Risk score (0-12)', 'Model churn probability', 'Txns (12m)', 'Txn amount', 'Credit limit', 'Months inactive'],
+    top.map(i => [D.clientnum[i], D.card_category[i], D.risk_score[i], pct(D.churn_probability[i] * 100, 0), D.total_trans_ct[i], '$' + fmt(D.total_trans_amt[i]), '$' + fmt(D.credit_limit[i]), D.months_inactive_12_mon[i]]))
+    : '<div class="empty">No high-risk customers match the current filters.</div>';
+}
+function render() {
+  const ix = filteredIdx();
+  document.getElementById('count').innerHTML = `<b>${fmt(ix.length)}</b> of ${fmt(N)} customers in view`;
+  renderKpis(ix); renderTables(ix);
+  CARDS.forEach(c => {
+    const ch = document.getElementById('chart_' + c.id), tv = document.getElementById('table_' + c.id);
+    const res = ix.length ? BUILD[c.id](ix) : null;
+    if (!res) { Plotly.purge(ch); ch.innerHTML = '<div class="empty">No customers match the current filters.</div>'; tv.innerHTML = ''; }
+    else {
+      if (views[c.id] === 'table') { tv.innerHTML = tableHTML(res.table.cols, res.table.rows); }
+      else { Plotly.react(ch, res.traces, res.layout, {displayModeBar:false, responsive:true}); }
+    }
+    ch.hidden = views[c.id] === 'table' && !!res; tv.hidden = !(views[c.id] === 'table' && !!res);
+  });
+}
+
+/* ---------- tabs ---------- */
+function showPage(id) {
+  ['page1', 'page2'].forEach(p => { document.getElementById(p).hidden = p !== id; });
+  document.getElementById('tab1').setAttribute('aria-selected', id === 'page1');
+  document.getElementById('tab2').setAttribute('aria-selected', id === 'page2');
+  render();
+  document.querySelectorAll('#' + id + ' .chart').forEach(c => { if (c.data) Plotly.Plots.resize(c); });
+}
+document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => showPage(t.dataset.page)));
+
+buildFilters(); buildCards(); render();
+if (location.hash === '#page2') showPage('page2');
+</script>
+</body>
+</html>

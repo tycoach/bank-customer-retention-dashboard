@@ -1,0 +1,4 @@
+products_held_band,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+1-2 products,2153,579,10248.3,7118.0,26.9
+3-4 products,4217,625,8266.3,3854.1,14.8
+5-6 products,3757,423,8116.1,3466.2,11.3

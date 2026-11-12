@@ -1,0 +1,4 @@
+spend_trend,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+Sharp decline (<0.6),2921,1031,8647.9,3027.4,35.3
+Mild decline (0.6-1.0),6538,554,8591.7,5165.0,8.5
+Stable/growing (>1.0),668,42,8956.0,2976.4,6.3

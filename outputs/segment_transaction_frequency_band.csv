@@ -1,0 +1,4 @@
+transaction_frequency_band,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+Low (<=50),3128,1187,8222.2,1820.7,37.9
+Medium (51-80),4449,409,8308.0,4083.5,9.2
+High (81+),2550,31,9699.7,8132.4,1.2

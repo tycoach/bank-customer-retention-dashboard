@@ -1,0 +1,16 @@
+check,before_cleaning,after_cleaning
+rows,10127,10127
+columns,23,35
+missing_values_total,0,0
+duplicate_rows,0,0
+duplicate_customer_ids,0,0
+leakage_columns_present,2,0
+unknown_education_level,1519,1519
+unknown_marital_status,749,749
+unknown_income_category,1112,1112
+open_to_buy_mismatches,0,0
+utilisation_mismatches,0,0
+tenure_exceeds_adult_life,0,0
+iqr_outliers_credit_limit,984,984
+iqr_outliers_total_trans_amt,896,896
+iqr_outliers_total_trans_ct,2,2

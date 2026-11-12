@@ -1,0 +1,4 @@
+customer_value_class,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+Low value,3378,1069,8500.7,1777.0,31.6
+Mid value,3373,251,8117.5,3748.3,7.4
+High value,3376,307,9277.3,7688.0,9.1

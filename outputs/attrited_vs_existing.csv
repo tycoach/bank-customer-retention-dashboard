@@ -1,0 +1,11 @@
+variable,existing_mean,attrited_mean,existing_median,attrited_median,pct_difference,p_value,significant_5pct
+Transactions (12m),68.6726,44.9336,71.0,43.0,-34.5683,0.0,True
+Transaction amount ($),4654.6559,3095.0258,4100.0,2329.0,-33.5069,0.0,True
+Revolving balance ($),1256.6041,672.823,1364.0,0.0,-46.457,0.0,True
+Utilisation ratio,0.2964,0.1625,0.211,0.0,-45.186,0.0,True
+Txn-count change Q4/Q1,0.7424,0.5544,0.721,0.531,-25.3286,0.0,True
+Products held,3.9146,3.2797,4.0,3.0,-16.2196,0.0,True
+Months inactive,2.2738,2.6933,2.0,3.0,18.4512,0.0,True
+Contacts with bank (12m),2.3564,2.9723,2.0,3.0,26.1416,0.0,True
+Credit limit ($),8726.8775,8136.0395,4643.5,4178.0,-6.7703,0.0,True
+Age,46.2621,46.6595,46.0,47.0,0.859,0.0781,False

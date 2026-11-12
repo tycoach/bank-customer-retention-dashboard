@@ -1,0 +1,5 @@
+utilisation_band,customers,attrited,avg_credit_limit,avg_trans_amt,attrition_rate_pct
+None (0%),2470,893,8039.1,4000.2,36.2
+Low (0-30%),3783,385,14781.7,5016.0,10.2
+Medium (30-60%),2072,168,3422.2,4342.2,8.1
+High (60%+),1802,181,2524.5,3744.3,10.0
