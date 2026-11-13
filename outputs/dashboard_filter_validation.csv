@@ -1,0 +1,33 @@
+filter_combination,customers_in_view,kpi,dashboard,pandas,match
+1. No filters,10127,Attrition rate,16.1%,16.1%,PASS
+1. No filters,10127,Active customer ratio,83.9%,83.9%,PASS
+1. No filters,10127,Average credit limit,"$8,632","$8,632",PASS
+1. No filters,10127,Average utilisation,27.5%,27.5%,PASS
+1. No filters,10127,Total transaction amount,$44.6M,$44.6M,PASS
+1. No filters,10127,Average products held,3.81,3.81,PASS
+1. No filters,10127,High-risk customers,"1,720","1,720",PASS
+1. No filters,10127,Transaction value at risk,8.1%,8.1%,PASS
+2. Risk band = High,1720,Attrition rate,64.0%,64.0%,PASS
+2. Risk band = High,1720,Active customer ratio,36.0%,36.0%,PASS
+2. Risk band = High,1720,Average credit limit,"$7,846","$7,846",PASS
+2. Risk band = High,1720,Average utilisation,16.2%,16.2%,PASS
+2. Risk band = High,1720,Total transaction amount,$3.6M,$3.6M,PASS
+2. Risk band = High,1720,Average products held,3.62,3.62,PASS
+2. Risk band = High,1720,High-risk customers,"1,720","1,720",PASS
+2. Risk band = High,1720,Transaction value at risk,100.0%,100.0%,PASS
+"3. Card = Blue, Gender = F",5101,Attrition rate,17.4%,17.4%,PASS
+"3. Card = Blue, Gender = F",5101,Active customer ratio,82.6%,82.6%,PASS
+"3. Card = Blue, Gender = F",5101,Average credit limit,"$4,308","$4,308",PASS
+"3. Card = Blue, Gender = F",5101,Average utilisation,35.5%,35.5%,PASS
+"3. Card = Blue, Gender = F",5101,Total transaction amount,$21.4M,$21.4M,PASS
+"3. Card = Blue, Gender = F",5101,Average products held,3.83,3.83,PASS
+"3. Card = Blue, Gender = F",5101,High-risk customers,865,865,PASS
+"3. Card = Blue, Gender = F",5101,Transaction value at risk,8.7%,8.7%,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Attrition rate,14.4%,14.4%,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Active customer ratio,85.6%,85.6%,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Average credit limit,"$3,966","$3,966",PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Average utilisation,32.7%,32.7%,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Total transaction amount,$1.6M,$1.6M,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Average products held,3.93,3.93,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,High-risk customers,0,0,PASS
+"4. Age 45-54, Low income, Risk = Medium",425,Transaction value at risk,0.0%,0.0%,PASS

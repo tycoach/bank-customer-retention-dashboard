@@ -1,10 +1,4 @@
 """Data profiling, cleaning and transformation (Task 2).
-
-Every decision is justified in the docstrings / comments so the report can
-quote it directly. Run as a script to regenerate the cleaned dataset and the
-before/after data-quality report:
-
-    python -m src.clean
 """
 from pathlib import Path
 
